@@ -1,0 +1,241 @@
+    1  cd /srv/app/udull/
+    2  ls
+    3  php artisan 
+    4  exit
+    5  exit
+    6  cd /srv/app/
+    7  ls
+    8  cd udull/
+    9  ls
+   10  ll
+   11  alias ll="ls -al"
+   12  ll
+   13  ll
+   14  ph artisan
+   15  php artisan
+   16  php artisan make:model
+   17  php artisan make:model --help
+   18  php artisan make:model userCategory
+   19  exit
+   20  cd /srv/app/
+   21  ll
+   22  ls
+   23  cd udull/
+   24  php artisan
+   25  php artisan migrate
+   26  exit
+   27  exit
+   28  cd /srv/app/
+   29  ll
+   30  cd udull/
+   31  ls
+   32  php artisan migrate
+   33  mysql -h 3dmy -u djeembo -p -P 13307 
+   34  ping 3dmy
+   35  exit
+   36  mysql -h 3dmy -u djeembo -p -P 3306
+   37  cd /srv/app/
+   38  ll
+   39  ls -al
+   40  cd udull/
+   41  ll
+   42  ls -al
+   43  ls
+   44  php artisan migrate
+   45  php artisan migrate category_user
+   46  php artisan migrate help
+   47  php artisan migrate --help
+   48  php artisan migrate -vvv
+   49  php artisan migrate --help
+   50  php artisan
+   51  php artisan migrate:refresh
+   52  php artisan migrate:fresh
+   53  php artisan migrate:fresh -vvv
+   54  php artisan migrate:fresh
+   55  php artisan migrate:fresh
+   56  php artisan migrate:fresh category_user
+   57  php artisan migrate:fresh category_user
+   58  php artisan make:migration category_user
+   59  php artisan --version
+   60  php artisan migrate:fresh
+   61  php artisan migrate:fresh
+   62  php artisan 
+   63  php artisan make:model Prova
+   64  php artisan
+   65  php artisan make:migration
+   66  php artisan make:migration --help
+   67  php artisan make:migration pippo
+   68  php artisan make:model --help
+   69  php artisan make:migration --help
+   70  php artisan
+   71  php artisan make:factory UserFactory --model=User
+   72  php artisan make:factory CategoryFactory --model=Category
+   73  php artisan make:factory CategoryUserFactory 
+   74  exit
+   75  cd /srv/app/
+   76  ks
+   77  cd udull/
+   78  ls
+   79  php artisan make:factory --help
+   80  php artisan make:factory --help User
+   81  php artisan make:factory -m User
+   82  php artisan --version
+   83  php artisan make:factory ModelFactory
+   84  ll
+   85  php artisan make:model --help
+   86  php artisan 
+   87  php artisan make:seeder --help
+   88  php artisan migrate:refresh
+   89  php artisan db:seed
+   90  php artisan db:seed
+   91  php artisan db:seed
+   92  php artisan db:seed
+   93  php artisan db:seed -v
+   94  php artisan db:seed -v
+   95  php artisan db:seed -v
+   96  clear
+   97  php artisan db:seed -v
+   98  clear
+   99  php artisan db:seed -v
+  100  php artisan db:seed -v
+  101  php artisan db:seed -v
+  102  ll
+  103  ls -al
+  104  exit
+  105  cd /srv/app/
+  106  ls
+  107  cd udull/
+  108  ll
+  109  ls
+  110  php artisan make:controller Category/CategoryController -r
+  111  php artisan routes
+  112  php artisan route:list
+  113  php artisan route:list
+  114  exit
+  115  cd /srv/app/
+  116  cd udull/
+  117  ll
+  118  alias ll='ls -al'
+  119  ll
+  120  php artisan migraion:refresh --help
+  121  php artisan 
+  122  php artisan migrate:refresh --help
+  123  php artisan migrate:refresh --seed
+  124  ls
+  125  phpunit
+  126  ./vendor/bin/phpunit 
+  127  ./vendor/bin/phpunit --help
+  128  ./vendor/bin/phpunit
+  129  ./vendor/bin/phpunit
+  130  ./vendor/bin/phpunit userTest
+  131  ./vendor/bin/phpunit UserTest
+  132  ./vendor/bin/phpunit tests/Unit/UserTest
+  133  exit
+  134  cd /srv/app/udull/
+  135  composer update
+  136  composer update
+  137  git
+  138  apk add git
+  139  apk add git
+  140  apk update && apk upgrade &&     apk add --no-cache bash git openssh
+  141  apk update && apk upgrade && apk add --no-cache git
+  142  exit
+  143  cd /srv/app/udull/
+  144  composer update
+  145  exit
+  146  cd /srv/app/udull/
+  147  ll
+  148  ls -al
+  149  ./vendor/bin/phpunit 
+  150  ./vendor/bin/phpunit 
+  151  ./vendor/bin/phpunit 
+  152  ./vendor/bin/phpunit 
+  153  ./vendor/bin/phpunit 
+  154  ./vendor/bin/phpunit 
+  155  ./vendor/bin/phpunit 
+  156  ./vendor/bin/phpunit 
+  157  ./vendor/bin/phpunit 
+  158  ./vendor/bin/phpunit 
+  159  ./vendor/bin/phpunit 
+  160  ./vendor/bin/phpunit 
+  161  ./vendor/bin/phpunit 
+  162  ./vendor/bin/phpunit 
+  163  ./vendor/bin/phpunit 
+  164  ./vendor/bin/phpunit 
+  165  dig udull.loc
+  166  apk add dnsutils
+  167  exit
+  168  cd /srv/app/udull/
+  169  ll
+  170  ls -al
+  171  ./vendor/bin/phpunit 
+  172  ./vendor/bin/phpunit 
+  173  ./vendor/bin/phpunit --filter testOneUser
+  174  ./vendor/bin/phpunit --filter testOneUser
+  175  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  176  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  177  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  178  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  179  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  180  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  181  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  182  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  183  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  184  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  185  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  186  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  187  php artisan 
+  188  php artisan migrate --help
+  189  php artisan migrate:refresh --seed
+  190  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  191  php artisan
+  192  php artisan make:seeder --help
+  193  php artisan make:seeder DisableForeignKeys
+  194  ls
+  195  cd database/seeds/
+  196  ll
+  197  ls -al
+  198  rm DisableForeignKeys.php 
+  199  exit
+  200  cd /srv/app/udull/
+  201  ll
+  202  ls -al
+  203  ./vendor/bin/phpunit 
+  204  composer dump-autoload
+  205  ./vendor/bin/phpunit 
+  206  ./vendor/bin/phpunit 
+  207  ./vendor/bin/phpunit 
+  208  ./vendor/bin/phpunit 
+  209  ./vendor/bin/phpunit 
+  210  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  211  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  212  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  213  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  214  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  215  ./vendor/bin/phpunit --filter testUnderstandingOneUser
+  216  ./vendor/bin/phpunit
+  217  ./vendor/bin/phpunit --filter UserTest
+  218  ./vendor/bin/phpunit --filter UserTest
+  219  ./vendor/bin/phpunit --filter UserTest
+  220  ./vendor/bin/phpunit --filter UserTest
+  221  ./vendor/bin/phpunit --filter UserTest
+  222  ./vendor/bin/phpunit --filter UserTest
+  223  ./vendor/bin/phpunit --filter UserTest
+  224  exit
+  225  ./vendor/bin/phpunit --filter UserTest
+  226  ./vendor/bin/phpunit 
+  227  cd /srv/app/
+  228  cd udull/
+  229  ls
+  230  ./vendor/bin/phpunit 
+  231  ./vendor/bin/phpunit 
+  232  ./vendor/bin/phpunit 
+  233  ./vendor/bin/phpunit 
+  234  ./vendor/bin/phpunit 
+  235  ./vendor/bin/phpunit 
+  236  ./vendor/bin/phpunit 
+  237  php artisan make:controller
+  238  php artisan make:controller ApiController
+  239  history | grep composer
+  240  history
+  241  history > history.txt
