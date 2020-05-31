@@ -4,14 +4,17 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\ApiController;
 use App\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends ApiController
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @return JsonResponse|Response
      */
     public function index()
     {
@@ -22,8 +25,8 @@ class UserController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @param Request $request
+     * @return JsonResponse|Response
      */
     public function store(Request $request)
     {
@@ -31,7 +34,8 @@ class UserController extends ApiController
        $this->validate($request, [
            'username' => 'required|alpha_dash|unique:users|max:30',
            'email' => 'required|email:dns|unique:users',
-           'password' => 'required|min:6|confirmed'
+           'password' => 'required|min:6|confirmed',
+//           'category' => 'array'
        ]);
 
 //       $data = $request->all();
@@ -42,6 +46,7 @@ class UserController extends ApiController
        $user->verified = User::UNVERIFIED_USER;
        $user->verification_token = User::generateVerificationCode();
        $user->admin = User::REGULAR_USER;
+       $user->category = $request->category;
        $user->save();
 
        return $this->showOne($user, 201);
@@ -51,25 +56,23 @@ class UserController extends ApiController
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\Response
+     * @param $user
+     * @return JsonResponse|Response
      */
-    public function show($id)
+    public function show(User $user)
     {
-//        $users = User::where('id', $id)->get();
-        $user = User::findOrFail($id);
         return $this->showOne($user);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\User $user
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Illuminate\Validation\ValidationException
+     * @param Request $request
+     * @param User $user
+     * @return JsonResponse
+     * @throws ValidationException
      */
-    public function update(Request $request, $user)
+    public function update(Request $request, User $user)
     {
 
         $this->validate($request, [
@@ -78,8 +81,6 @@ class UserController extends ApiController
 //            'admin' => "in:".User::ADMIN_USER.",".User::REGULAR_USER,
             'password' => 'min:6|confirmed'
         ]);
-
-        $user = User::findOrFail($user->id);
 
         if ( $request->has('username') ) {
             $user->username = $request->username;
@@ -95,7 +96,7 @@ class UserController extends ApiController
         }
 
         if ( !$user->isDirty() ){
-            var_dump('ciccia');
+            return $this->errorResponse('You need to specify a different value to update', 422);
         }
 
         $user->save();
@@ -108,11 +109,13 @@ class UserController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param $user
+     * @return JsonResponse
      */
-    public function destroy($id)
+    public function destroy(Request $request, User $user)
     {
-        //
+        $user->delete();
+        return $this->showOne($user);
+
     }
 }

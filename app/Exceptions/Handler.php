@@ -5,8 +5,10 @@ namespace App\Exceptions;
 use App\Traits\ApiResponser;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -69,7 +71,20 @@ class Handler extends ExceptionHandler
             return $this->errorResponse("Not Allowed", "405");
         }
 
-        return parent::render($request, $exception);
+        if ( $exception instanceof HttpException ){
+            return $this->errorResponse($exception->getMessage(), $exception->getStatusCode());
+        }
+
+//        if ( $exception instanceof QueryException ){
+//            if ( $exception->errorCode[1] == 1451 )
+//                return $this->errorResponse("Cannot remove this resource permanently. It is related to any other resource", 409);
+//        }
+
+        if ( config('app.debug') )
+            return parent::render($request, $exception);
+
+        return $this->errorResponse('Unexcpected Exception try again later', 500);
+
     }
 
     /**

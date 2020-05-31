@@ -11,6 +11,9 @@ class DatabaseSeeder extends Seeder
 
     use ManageForeignKeys;
 
+    const USERS_QUANTITY_SEEDER = 100;
+    const CATEGORIES_QUANTITY_SEEDER = 10;
+
     /**
      * Seed the application's database.
      *
@@ -26,11 +29,8 @@ class DatabaseSeeder extends Seeder
         Category::truncate();
         DB::table('category_user')->truncate();
 
-        $usersQuantity = 200;
-        $categoriesQuantity = 10;
-
-        factory(Category::class, $categoriesQuantity)->create();
-        factory(User::class, $usersQuantity)->create()->each(
+        factory(Category::class, self::CATEGORIES_QUANTITY_SEEDER)->create();
+        factory(User::class, self::USERS_QUANTITY_SEEDER)->create()->each(
             function ( $user ) {
                 $categories = Category::all()->random(mt_rand(1,4))->pluck('id');
                 $user->categories()->attach($categories);

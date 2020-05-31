@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\App;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -20,16 +21,15 @@ class UserTest extends TestCase
         $response->assertJsonCount(200, 'data');
     }
 
+
     public function testGetOneUser()
     {
         $response = $this->json( 'get', '/users/10');
-        
         $response->assertJsonCount( 1 );
         $response->assertJsonStructure([ 'data' => [
             'id','username','email','verified','admin','created_at','updated_at','deleted_at'
         ]]);
     }
-
 
 
     public function testCreateOneUser()
@@ -40,7 +40,7 @@ class UserTest extends TestCase
             'password' => 'password',
             'password_confirmation' => 'password'
         ]);
-//        $response->dump();
+
         $response->assertStatus(201);
         $response->assertJsonStructure([ 'data' => [
             'id','username','email','verified','admin','created_at','updated_at'
@@ -67,39 +67,94 @@ class UserTest extends TestCase
     }
 
 
+    public function testUpdateOneUser() {
 
-//    public function testUpdateOneUser() {
-//
-//        $id = rand(1,200);
-//
-//        $firstResponse = $this->json( 'get', "/users/$id" );
-//        $firstResponse->dump();
-//        $firstResponse->assertStatus(200);
-//
-//
-//
-//        $newResponse = $this->json( 'patch', "/users/$id", [
-//            'username' => 'nuovoDjeembo',
-//            'email' => 'nuovoDjeembo@ramarro.com',
-//            'password' => 'nuovaPassword',
-//            'password_confirmation' => 'nuovaPassword',
-//        ]);
-//
-//////        $response->assertJsonStructure([ 'data' => [
-//////            'username', 'password' , 'email'
-//////        ]]);
-////
-//        $newResponse->assertStatus(200);
-//        $newResponse->dump();
-//
-////        $response->assertJson(['data' => [
-////            'username' => 'nuovoDjeembo',
-////            'email' => 'nuovoDjeembo@ramarro.com',
-////            'password' => 'nuovaPassword'
-////        ]]);
-//
-//
-//    }
+        $id = rand(1,200);
+
+        $firstResponse = $this->json( 'get', "/users/$id" );
+        $firstResponse->assertStatus(200);
+
+        $pass = 'nuovaPassword';
+        $newResponse = $this->json( 'patch', "/users/$id", [
+            'username' => 'nuovoDjeembo',
+            'email' => 'nuovoDjeembo@ramarro.com',
+            'password' => $pass,
+            'password_confirmation' => $pass,
+        ]);
+
+        $newResponse->assertStatus(200);
+
+        $newget = $this->json( 'get', "/users/$id" );
+//        $newget->dump();
+        $newget->assertJson(['data' => [
+            'username' => 'nuovoDjeembo',
+            'email' => 'nuovoDjeembo@ramarro.com',
+        ]]);
+
+        $user = User::findOrFail($id);
+        $this->assertTrue(password_verify($pass, $user->password));
+
+    }
+
+    public function testUpdateOneUserDirty() {
+
+
+        $response = $this->json( 'post', '/users', [
+            'username' => 'djeembodelete1',
+            'email' => 'djeembo@gmail.com',
+            'password' => 'password',
+            'password_confirmation' => 'password'
+        ]);
+
+        $response->assertStatus(201);
+        $response->assertJsonStructure([ 'data' => [
+            'id','username','email','verified','admin','created_at','updated_at'
+        ]]);
+        $data = $response->decodeResponseJson();
+
+
+        $newResponse = $this->json( 'patch', "/users/{$data['data']['id']}", [
+            'username' => 'djeembodelete1',
+            'email' => 'djeembo@gmail.com',
+            'password' => 'password',
+            'password_confirmation' => 'password'
+        ]);
+
+        $newResponse->assertStatus(422);
+
+    }
+
+
+    public function testDeleteUser() {
+        $response = $this->json( 'post', '/users', [
+            'username' => 'djeembodelete1',
+            'email' => 'djeembo@gmail.com',
+            'password' => 'password',
+            'password_confirmation' => 'password'
+        ]);
+
+        $response->assertStatus(201);
+        $response->assertJsonStructure([ 'data' => [
+            'id','username','email','verified','admin','created_at','updated_at'
+        ]]);
+
+        $response->assertJson([ 'data' => [
+            'username' => 'djeembodelete1',
+            'id' => 201,
+            'email' => 'djeembo@gmail.com',
+            'verified' => '0',
+            'admin' => "false"
+        ]]);
+
+        $response = $this->json( 'delete', '/users/201');
+        $response->assertStatus(200);
+
+        $response = $this->json( 'get', "/users/201" );
+        $response->assertStatus(404);
+
+    }
+
+
 
 //////////////
 ///
