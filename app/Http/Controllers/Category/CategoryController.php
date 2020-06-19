@@ -29,8 +29,8 @@ class CategoryController extends ApiController
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|max:190',
-            'description' => 'required|max:999'
+            'name' => 'required|max:'. Category::MAX_LEN_NAME,
+            'description' => 'required|max:'. Category::MAX_LEN_DESCRIPTION
         ]);
         $category = new Category();
         $category->name = $request->name;

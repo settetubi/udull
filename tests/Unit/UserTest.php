@@ -18,7 +18,7 @@ class UserTest extends TestCase
     {
         $response = $this->json('get', '/users' );
         $response->assertSee("username");
-        $response->assertJsonCount(200, 'data');
+        $response->assertJsonCount(\DatabaseSeeder::USERS_QUANTITY_SEEDER, 'data');
     }
 
 
@@ -47,17 +47,17 @@ class UserTest extends TestCase
         ]]);
         $response->assertJson([ 'data' => [
             'username' => 'djeembo1',
-            'id' => 201,
+            'id' => \DatabaseSeeder::USERS_QUANTITY_SEEDER+1,
             'email' => 'djeembo@gmail.com',
             'verified' => '0',
             'admin' => "false"
         ]]);
 
-        $response = $this->json( 'get', '/users/201');
+        $response = $this->json( 'get', '/users/'.(\DatabaseSeeder::USERS_QUANTITY_SEEDER+1));
         $response->assertStatus(200);
         $response->assertJson([ 'data' => [
             'username' => 'djeembo1',
-            'id' => 201,
+            'id' => \DatabaseSeeder::USERS_QUANTITY_SEEDER+1,
             'email' => 'djeembo@gmail.com',
             'verified' => '0',
             'admin' => "false"
@@ -69,7 +69,7 @@ class UserTest extends TestCase
 
     public function testUpdateOneUser() {
 
-        $id = rand(1,200);
+        $id = rand(1,\DatabaseSeeder::USERS_QUANTITY_SEEDER);
 
         $firstResponse = $this->json( 'get', "/users/$id" );
         $firstResponse->assertStatus(200);
@@ -85,7 +85,7 @@ class UserTest extends TestCase
         $newResponse->assertStatus(200);
 
         $newget = $this->json( 'get', "/users/$id" );
-//        $newget->dump();
+
         $newget->assertJson(['data' => [
             'username' => 'nuovoDjeembo',
             'email' => 'nuovoDjeembo@ramarro.com',
@@ -140,16 +140,16 @@ class UserTest extends TestCase
 
         $response->assertJson([ 'data' => [
             'username' => 'djeembodelete1',
-            'id' => 201,
+            'id' => (\DatabaseSeeder::USERS_QUANTITY_SEEDER+1),
             'email' => 'djeembo@gmail.com',
             'verified' => '0',
             'admin' => "false"
         ]]);
 
-        $response = $this->json( 'delete', '/users/201');
+        $response = $this->json( 'delete', '/users/'.(\DatabaseSeeder::USERS_QUANTITY_SEEDER+1));
         $response->assertStatus(200);
 
-        $response = $this->json( 'get', "/users/201" );
+        $response = $this->json( 'get', "/users/".(\DatabaseSeeder::USERS_QUANTITY_SEEDER+1) );
         $response->assertStatus(404);
 
     }

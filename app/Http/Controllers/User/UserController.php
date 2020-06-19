@@ -46,7 +46,6 @@ class UserController extends ApiController
        $user->verified = User::UNVERIFIED_USER;
        $user->verification_token = User::generateVerificationCode();
        $user->admin = User::REGULAR_USER;
-       $user->category = $request->category;
        $user->save();
 
        return $this->showOne($user, 201);
@@ -79,7 +78,9 @@ class UserController extends ApiController
             'username' => "alpha_dash|unique:users|max:30",
             'email' => "email:dns|unique:users,email,$user->id",
 //            'admin' => "in:".User::ADMIN_USER.",".User::REGULAR_USER,
-            'password' => 'min:6|confirmed'
+            'password' => 'min:6|confirmed',
+            'categories' => "array|max:10",
+            'categories.*' => "integer|categories,id"
         ]);
 
         if ( $request->has('username') ) {
@@ -93,6 +94,10 @@ class UserController extends ApiController
 
         if ( $request->has('password') ) {
             $user->password = bcrypt($request->password);
+        }
+
+        if ( $request->has('categories') ) {
+            $user->categories()->sync($request->categories);
         }
 
         if ( !$user->isDirty() ){

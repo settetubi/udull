@@ -72,6 +72,25 @@ class CategoryTest extends TestCase
             'description' => 'categoria figa'
         ]]);
     }
+    public function testCreateWithVeryLongFields()
+    {
+        $dummyString = function ($howlong = 1){
+            $tmp = "";
+            for( $i = 1; $i<=$howlong; $i++ )
+                $tmp .= "012 345678 9qazxswe dcvf rtgbn nhyuj mkiopl "[rand(1, 43)];
+
+            return $tmp;
+        };
+
+
+        $response = $this->json('post', "/categories", [
+            'name' => $dummyString( Category::MAX_LEN_NAME ),
+            'description' => $dummyString( Category::MAX_LEN_DESCRIPTION )
+        ]);
+
+        $response->assertStatus(201);
+
+    }
     public function testErrorArgumentsCreateCategory()
     {
 
@@ -84,18 +103,17 @@ class CategoryTest extends TestCase
         };
 
         $response = $this->json('post', "/categories", [
-            'name' => $dummyString(191),
+            'name' => $dummyString(Category::MAX_LEN_NAME+10),
             'description' => 'categoria figa'
         ]);
-
         $response->assertStatus(422);
         $response = $this->json('post', "/categories", [
             'name' => 'gnappo',
-            'description' => $dummyString(1000)
+            'description' => $dummyString(Category::MAX_LEN_DESCRIPTION+10)
         ]);
 
         $response->assertStatus(422);
-        
+
     }
 
 }
