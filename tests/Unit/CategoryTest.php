@@ -156,4 +156,13 @@ class CategoryTest extends TestCase
 
     }
 
+    //delete
+    public function testDeleteCategory ()
+    {
+        $id = rand(1, \DatabaseSeeder::CATEGORIES_QUANTITY_SEEDER);
+
+        $response = $this->json('DELETE', "categories/$id");
+        $response->assertStatus(200);
+    }
+
 }

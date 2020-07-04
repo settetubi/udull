@@ -18,8 +18,8 @@ class CategoryUser extends Migration
            $table->unsignedBigInteger(('user_id'));
            $table->primary(['category_id', 'user_id']);
 
-           $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade');
-           $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade');
+           $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
+           $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
