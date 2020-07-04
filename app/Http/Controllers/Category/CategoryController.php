@@ -5,9 +5,14 @@ namespace App\Http\Controllers\Category;
 use App\Category;
 use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
+use phpDocumentor\Reflection\Types\Self_;
 
 class CategoryController extends ApiController
 {
+
+    const NAME_ARG = 'name';
+    const DESCRIPTION_ARG = 'description';
+
     /**
      * Display a listing of the resource.
      *
@@ -29,8 +34,8 @@ class CategoryController extends ApiController
     public function store(Request $request)
     {
         $this->validate($request, [
-            'name' => 'required|max:'. Category::MAX_LEN_NAME,
-            'description' => 'required|max:'. Category::MAX_LEN_DESCRIPTION
+            self::NAME_ARG => 'required|max:'. Category::MAX_LEN_NAME,
+            self::DESCRIPTION_ARG => 'required|max:'. Category::MAX_LEN_DESCRIPTION
         ]);
         $category = new Category();
         $category->name = $request->name;
@@ -55,13 +60,23 @@ class CategoryController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param \Illuminate\Http\Request $request
+     * @param Category $category
+     * @return void
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Category $category)
     {
-        //
+        $this->validate($request, [
+            self::NAME_ARG => 'max:'. Category::MAX_LEN_NAME,
+            self::DESCRIPTION_ARG => 'max:'. Category::MAX_LEN_DESCRIPTION
+        ]);
+
+        $category->name = $request->name ?? '';
+        $category->description = $request->description ?? '';
+        $category->save();
+
+        return $this->showOne($category, 200);
+
     }
 
     /**

@@ -3,6 +3,8 @@
 namespace Tests\Unit;
 
 use App\Category;
+use App\Http\Controllers\Category\CategoryController;
+use App\Http\Controllers\User\UserController;
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Tests\TestCase;
@@ -113,6 +115,44 @@ class CategoryTest extends TestCase
         ]);
 
         $response->assertStatus(422);
+
+    }
+
+    //patch
+    public function testUpdateCategory()
+    {
+        $id = rand(1, \DatabaseSeeder::CATEGORIES_QUANTITY_SEEDER);
+        $response = $this->json('PATCH', "categories/$id", [
+            CategoryController::NAME_ARG => 'pippopluto',
+
+        ]);
+        $response->assertStatus(200);
+        $newget = $this->json( 'get', "/categories/$id" );
+        $newget->assertJson(['data' => [
+            CategoryController::NAME_ARG => 'pippopluto',
+        ]]);
+
+        $response = $this->json('PATCH', "categories/$id", [
+            CategoryController::DESCRIPTION_ARG => 'gnappolone',
+
+        ]);
+        $response->assertStatus(200);
+        $newget = $this->json( 'get', "/categories/$id" );
+        $newget->assertJson(['data' => [
+            CategoryController::DESCRIPTION_ARG => 'gnappolone',
+        ]]);
+
+        $response = $this->json('PATCH', "categories/$id", [
+            CategoryController::NAME_ARG => 'pippopluto',
+            CategoryController::DESCRIPTION_ARG => 'gnappolone',
+        ]);
+        $response->assertStatus(200);
+        $newget = $this->json( 'get', "/categories/$id" );
+        $newget->assertJson(['data' => [
+            CategoryController::NAME_ARG => 'pippopluto',
+            CategoryController::DESCRIPTION_ARG => 'gnappolone',
+        ]]);
+
 
     }
 

@@ -15,6 +15,10 @@ class Category extends Model
         'description'
     ];
 
+    protected $hidden = [
+        'pivot'
+    ];
+
     public function Users ()
     {
         return $this->belongsToMany(User::class);

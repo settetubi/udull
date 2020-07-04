@@ -30,8 +30,7 @@ class User extends Authenticatable
         'password',
         'verified',
         'verification_token',
-        'admin',
-        'category'
+        'admin'
     ];
 
     /**
@@ -43,7 +42,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'verification_token',
-        'email_verified_at'
+        'email_verified_at',
     ];
 
     /**
@@ -57,7 +56,10 @@ class User extends Authenticatable
 
     public function categories()
     {
-        return $this->belongsToMany(Category::class );
+        return
+            $this->belongsToMany(Category::class )
+            ->select(['id', 'name', 'description']
+            );
     }
 
 

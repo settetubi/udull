@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Category;
 use App\Http\Controllers\ApiController;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends ApiController
 {
+
+    const USERNAME_ARG = 'username';
+    const EMAIL_ARG = 'email';
+    const PASSWORD_ARG = 'password';
+    const CATEGORIES_ARG = 'categories';
+
     /**
      * Display a listing of the resource.
      *
@@ -32,10 +41,11 @@ class UserController extends ApiController
     {
 
        $this->validate($request, [
-           'username' => 'required|alpha_dash|unique:users|max:30',
-           'email' => 'required|email:dns|unique:users',
-           'password' => 'required|min:6|confirmed',
-//           'category' => 'array'
+           self::USERNAME_ARG => 'required|alpha_dash|unique:users|max:30',
+           self::EMAIL_ARG => 'required|email:dns|unique:users',
+           self::PASSWORD_ARG => 'required|min:6|confirmed',
+           self::CATEGORIES_ARG => 'array|distinct',
+           self::CATEGORIES_ARG.".*" => 'exists:categories,id|integer'
        ]);
 
 //       $data = $request->all();
@@ -46,7 +56,11 @@ class UserController extends ApiController
        $user->verified = User::UNVERIFIED_USER;
        $user->verification_token = User::generateVerificationCode();
        $user->admin = User::REGULAR_USER;
-       $user->save();
+
+       DB::transaction( function() use ($user, $request) {
+           $user->save();
+           $user->categories()->sync($request->categories);
+       });
 
        return $this->showOne($user, 201);
 
@@ -60,7 +74,7 @@ class UserController extends ApiController
      */
     public function show(User $user)
     {
-        return $this->showOne($user);
+        return $this->showOne($user->load('categories'));
     }
 
     /**
@@ -75,12 +89,11 @@ class UserController extends ApiController
     {
 
         $this->validate($request, [
-            'username' => "alpha_dash|unique:users|max:30",
-            'email' => "email:dns|unique:users,email,$user->id",
+            self::USERNAME_ARG => "alpha_dash|unique:users|max:30",
+            self::EMAIL_ARG => "email:dns|unique:users,email,$user->id",
 //            'admin' => "in:".User::ADMIN_USER.",".User::REGULAR_USER,
-            'password' => 'min:6|confirmed',
-            'categories' => "array|max:10",
-            'categories.*' => "integer|categories,id"
+            self::PASSWORD_ARG => 'min:6|confirmed',
+
         ]);
 
         if ( $request->has('username') ) {
@@ -96,7 +109,7 @@ class UserController extends ApiController
             $user->password = bcrypt($request->password);
         }
 
-        if ( $request->has('categories') ) {
+        if ( $request->has(self::CATEGORIES_ARG) ) {
             $user->categories()->sync($request->categories);
         }
 
@@ -106,7 +119,7 @@ class UserController extends ApiController
 
         $user->save();
 
-        return $this->showOne($user);
+        return $this->showOne($user, 200);
 
 
     }

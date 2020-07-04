@@ -14,11 +14,12 @@ class UserTest extends TestCase
 {
     use DatabaseMigrations, RefreshDatabase;
 
-    public function testGetUsers()
+    public function testGetUserList()
     {
         $response = $this->json('get', '/users' );
         $response->assertSee("username");
         $response->assertJsonCount(\DatabaseSeeder::USERS_QUANTITY_SEEDER, 'data');
+
     }
 
 
@@ -27,7 +28,7 @@ class UserTest extends TestCase
         $response = $this->json( 'get', '/users/10');
         $response->assertJsonCount( 1 );
         $response->assertJsonStructure([ 'data' => [
-            'id','username','email','verified','admin','created_at','updated_at','deleted_at'
+            'id','username','email','verified','admin','created_at','updated_at','deleted_at','categories' => [[ 'id', 'name', 'description']]
         ]]);
     }
 
@@ -62,10 +63,32 @@ class UserTest extends TestCase
             'verified' => '0',
             'admin' => "false"
         ]]);
-
-
     }
 
+
+    public function testCreateOneUserWithCategories(){
+
+        $cat = [];
+        for( $i=0, $until=rand(2,5) ; $i<$until ; $v=rand(1,10), $cat[$v]=$v, $i++ ) ;
+
+        $response = $this->json( 'post', '/users', [
+            'username' => 'djeembox',
+            'email' => 'djeembox@gmail.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+            'categories' => $cat
+        ]);
+        $response->assertStatus(201 );
+
+        $id = $response->json('data')['id'];
+        $response = $this->json( 'get', "/users/$id");
+
+        $response->assertJsonCount( 1 );
+        $response->assertJsonStructure([ 'data' => [
+            'id','username','email','verified','admin','created_at','updated_at','deleted_at','categories' => [[ 'id', 'name', 'description']]
+        ]]);
+
+    }
 
     public function testUpdateOneUser() {
 
@@ -79,7 +102,7 @@ class UserTest extends TestCase
             'username' => 'nuovoDjeembo',
             'email' => 'nuovoDjeembo@ramarro.com',
             'password' => $pass,
-            'password_confirmation' => $pass,
+            'password_confirmation' => $pass
         ]);
 
         $newResponse->assertStatus(200);
