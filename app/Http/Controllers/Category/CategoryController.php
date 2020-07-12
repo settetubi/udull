@@ -62,7 +62,7 @@ class CategoryController extends ApiController
      *
      * @param \Illuminate\Http\Request $request
      * @param Category $category
-     * @return void
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, Category $category)
     {
@@ -84,7 +84,7 @@ class CategoryController extends ApiController
      *
      * @param Request $request
      * @param Category $category
-     * @return void
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Request $request, Category $category)
     {

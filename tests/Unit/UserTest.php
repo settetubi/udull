@@ -71,6 +71,8 @@ class UserTest extends TestCase
         $cat = [];
         for( $i=0, $until=rand(2,5) ; $i<$until ; $v=rand(1,10), $cat[$v]=$v, $i++ ) ;
 
+        $until = count( $cat );
+
         $response = $this->json( 'post', '/users', [
             'username' => 'djeembox',
             'email' => 'djeembox@gmail.com',
@@ -88,6 +90,12 @@ class UserTest extends TestCase
             'id','username','email','verified','admin','created_at','updated_at','deleted_at','categories' => [[ 'id', 'name', 'description']]
         ]]);
 
+        $response->assertJsonCount($until, 'data.categories');
+
+        $this->assertEmpty(
+            array_diff_key($cat, array_column(data_get($response->json(), 'data.categories'), 'id', 'id'))
+        );
+
     }
 
     public function testUpdateOneUser() {
@@ -102,20 +110,32 @@ class UserTest extends TestCase
             'username' => 'nuovoDjeembo',
             'email' => 'nuovoDjeembo@ramarro.com',
             'password' => $pass,
-            'password_confirmation' => $pass
+            'password_confirmation' => $pass,
+            'categories' => [8,9]
         ]);
 
         $newResponse->assertStatus(200);
 
-        $newget = $this->json( 'get', "/users/$id" );
+        $newResponse = $this->json( 'get', "/users/$id" );
 
-        $newget->assertJson(['data' => [
+        $newResponse->assertJson(['data' => [
             'username' => 'nuovoDjeembo',
             'email' => 'nuovoDjeembo@ramarro.com',
-        ]]);
 
+        ]]);
         $user = User::findOrFail($id);
+
         $this->assertTrue(password_verify($pass, $user->password));
+
+        $cats = [];
+        $newResponse->assertJsonCount(2, 'data.categories');
+
+        foreach($user->categories as $cat) {
+            $cats[$cat->id] = $cat->id;
+        }
+
+        $this->assertTrue( key_exists(8, $cats));
+        $this->assertTrue( key_exists(9, $cats));
 
     }
 
