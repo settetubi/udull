@@ -36,7 +36,7 @@ class CategoryTest extends TestCase
         $response = $this->json('get', "/categories/$id" );
         $response->assertStatus(200);
         $response->assertJsonStructure([ 'data' => [
-            'name', 'description', 'id'
+            'name', 'description', 'identifier'
         ]]);
     }
     public function testErrorNotFoundGetCategory()
@@ -67,7 +67,7 @@ class CategoryTest extends TestCase
         ]);
         $response->assertStatus(201);
         $response->assertJsonStructure([ 'data' => [
-            'name', 'id', 'description'
+            'name', 'identifier', 'description'
         ]]);
         $response->assertJson([ 'data' => [
             'name' => 'Gnappocat',

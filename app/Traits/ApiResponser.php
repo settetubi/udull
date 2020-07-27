@@ -22,7 +22,9 @@ trait ApiResponser
         if ( empty( $collection ) )
             return $this->successResponse(['data' => $collection], $code);
 
-        $collection = $this->transformData($collection, $collection->first()->transformer);
+        $trasformerObject = $collection->first()->transformer;
+        $collection = $this->sortData( $collection, $trasformerObject );
+        $collection = $this->transformData($collection, $trasformerObject);
         return $this->successResponse(['data' => $collection], $code);
     }
 
@@ -31,6 +33,21 @@ trait ApiResponser
         $model = $this->transformData($model, $model->transformer);
 
         return $this->successResponse(['data' => $model], $code);
+    }
+
+    protected function sortData( Collection $data, $transformer )
+    {
+
+        if ( request()->has('by') ) {
+            $by = $transformer::originalAttribute(request()->by);
+            $order = request()->has('order') && (in_array(request()->order, ['asc', 'desc'])) ?
+                request()->order == 'desc':
+                'asc';
+
+            return $data->sortBy($by, SORT_REGULAR, $order == 'desc');
+        }
+
+        return $data;
     }
 
     protected function transformData( $data, $transformer )

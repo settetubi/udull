@@ -36,14 +36,14 @@ class UserTransformer extends TransformerAbstract
         $cats = [];
         foreach( $user->categories as $category ){
             $cats[] = [
-                'id' => (int)$category->id,
+                'identifier' => (int)$category->id,
                 'name' => (string)$category->name,
                 'description' => (string)$category->description
             ];
         }
 
         return [
-            'id' => (int)$user->id,
+            'identifier' => (int)$user->id,
             'username' => (string)$user->username,
             'email' => (string)$user->email,
             'verified' => $user->verified,
@@ -54,5 +54,23 @@ class UserTransformer extends TransformerAbstract
             'categories' => $cats
 
         ];
+    }
+
+
+    public static function originalAttribute ( $name )
+    {
+        $tmp = [
+            'identifier' => 'id',
+            'username' => 'username',
+            'email' => 'email',
+            'verified' => 'verified',
+            'admin' => 'admin',
+            'created_at' => 'created_at',
+            'updated_at' => 'updated_at',
+            'deleted_at' => 'deleted_at',
+            'categories' => 'categories'
+        ];
+
+        return ( $tmp[$name] ?? null );
     }
 }

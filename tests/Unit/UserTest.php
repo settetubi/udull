@@ -28,7 +28,7 @@ class UserTest extends TestCase
         $response = $this->json( 'get', '/users/10');
         $response->assertJsonCount( 1 );
         $response->assertJsonStructure([ 'data' => [
-            'id','username','email','verified','admin','created_at','updated_at','deleted_at','categories' => [[ 'id', 'name', 'description']]
+            'identifier','username','email','verified','admin','created_at','updated_at','deleted_at','categories' => [[ 'identifier', 'name', 'description']]
         ]]);
     }
 
@@ -44,11 +44,11 @@ class UserTest extends TestCase
 
         $response->assertStatus(201);
         $response->assertJsonStructure([ 'data' => [
-            'id','username','email','verified','admin','created_at','updated_at'
+            'identifier','username','email','verified','admin','created_at','updated_at'
         ]]);
         $response->assertJson([ 'data' => [
             'username' => 'djeembo1',
-            'id' => \DatabaseSeeder::USERS_QUANTITY_SEEDER+1,
+            'identifier' => \DatabaseSeeder::USERS_QUANTITY_SEEDER+1,
             'email' => 'djeembo@gmail.com',
             'verified' => '0',
             'admin' => "false"
@@ -58,7 +58,7 @@ class UserTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson([ 'data' => [
             'username' => 'djeembo1',
-            'id' => \DatabaseSeeder::USERS_QUANTITY_SEEDER+1,
+            'identifier' => \DatabaseSeeder::USERS_QUANTITY_SEEDER+1,
             'email' => 'djeembo@gmail.com',
             'verified' => '0',
             'admin' => "false"
@@ -82,18 +82,18 @@ class UserTest extends TestCase
         ]);
         $response->assertStatus(201 );
 
-        $id = $response->json('data')['id'];
+        $id = $response->json('data')['identifier'];
         $response = $this->json( 'get', "/users/$id");
 
         $response->assertJsonCount( 1 );
         $response->assertJsonStructure([ 'data' => [
-            'id','username','email','verified','admin','created_at','updated_at','deleted_at','categories' => [[ 'id', 'name', 'description']]
+            'identifier','username','email','verified','admin','created_at','updated_at','deleted_at','categories' => [[ 'identifier', 'name', 'description']]
         ]]);
 
         $response->assertJsonCount($until, 'data.categories');
 
         $this->assertEmpty(
-            array_diff_key($cat, array_column(data_get($response->json(), 'data.categories'), 'id', 'id'))
+            array_diff_key($cat, array_column(data_get($response->json(), 'data.categories'), 'identifier', 'identifier'))
         );
 
     }
@@ -151,12 +151,12 @@ class UserTest extends TestCase
 
         $response->assertStatus(201);
         $response->assertJsonStructure([ 'data' => [
-            'id','username','email','verified','admin','created_at','updated_at'
+            'identifier','username','email','verified','admin','created_at','updated_at'
         ]]);
         $data = $response->decodeResponseJson();
 
 
-        $newResponse = $this->json( 'patch', "/users/{$data['data']['id']}", [
+        $newResponse = $this->json( 'patch', "/users/{$data['data']['identifier']}", [
             'username' => 'djeembodelete1',
             'email' => 'djeembo@gmail.com',
             'password' => 'password',
@@ -178,12 +178,12 @@ class UserTest extends TestCase
 
         $response->assertStatus(201);
         $response->assertJsonStructure([ 'data' => [
-            'id','username','email','verified','admin','created_at','updated_at'
+            'identifier','username','email','verified','admin','created_at','updated_at'
         ]]);
 
         $response->assertJson([ 'data' => [
             'username' => 'djeembodelete1',
-            'id' => (\DatabaseSeeder::USERS_QUANTITY_SEEDER+1),
+            'identifier' => (\DatabaseSeeder::USERS_QUANTITY_SEEDER+1),
             'email' => 'djeembo@gmail.com',
             'verified' => '0',
             'admin' => "false"
