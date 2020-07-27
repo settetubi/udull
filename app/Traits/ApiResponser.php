@@ -23,6 +23,7 @@ trait ApiResponser
             return $this->successResponse(['data' => $collection], $code);
 
         $trasformerObject = $collection->first()->transformer;
+        $collection = $this->filterData( $collection, $trasformerObject );
         $collection = $this->sortData( $collection, $trasformerObject );
         $collection = $this->transformData($collection, $trasformerObject);
         return $this->successResponse(['data' => $collection], $code);
@@ -54,5 +55,17 @@ trait ApiResponser
     {
         return fractal( $data, new $transformer )->toArray()['data'];
 
+    }
+
+    protected function filterData ( Collection $data, $transformer )
+    {
+        foreach( request()->query() as $filter => $value ){
+            $attribute = $transformer::originalAttribute( $filter );
+
+            if ( isset( $attribute, $value) )
+                $data = $data->where($attribute, $value);
+        }
+
+        return $data;
     }
 }
