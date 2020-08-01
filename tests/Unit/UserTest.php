@@ -16,9 +16,9 @@ class UserTest extends TestCase
 
     public function testGetUserList()
     {
-        $response = $this->json('get', '/users' );
+        $response = $this->json('get', '/users?per_page=30' );
         $response->assertSee("username");
-        $response->assertJsonCount(\DatabaseSeeder::USERS_QUANTITY_SEEDER, 'data');
+        $response->assertJsonCount(30, 'data');
 
     }
 
@@ -98,6 +98,7 @@ class UserTest extends TestCase
 
     }
 
+
     public function testUpdateOneUser() {
 
         $id = rand(1,\DatabaseSeeder::USERS_QUANTITY_SEEDER);
@@ -138,6 +139,7 @@ class UserTest extends TestCase
         $this->assertTrue( key_exists(9, $cats));
 
     }
+
 
     public function testUpdateOneUserDirty() {
 
@@ -212,6 +214,7 @@ class UserTest extends TestCase
         ]);
     }
 
+
     public function testErrorCreationEmptyUser()
     {
         $response = $this->json('post', '/users', []);
@@ -221,6 +224,7 @@ class UserTest extends TestCase
         ]);
     }
 
+
     public function testNotFound()
     {
         $response = $this->json('get', '/gnappo');
@@ -229,6 +233,7 @@ class UserTest extends TestCase
             'error', 'code',
         ]);
     }
+
 
     public function testMethodNotAllowed()
     {
