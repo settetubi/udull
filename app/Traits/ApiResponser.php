@@ -4,8 +4,10 @@ namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 trait ApiResponser
@@ -33,6 +35,7 @@ trait ApiResponser
         $collection = $this->paginate( $collection );
 
         $collection = $this->transformData($collection, $trasformerObject);
+        $collection = $this->cacheResponse($collection);
         return $this->successResponse($collection, $code);
     }
 
@@ -102,6 +105,17 @@ trait ApiResponser
         return $paginated;
 
 
+    }
+
+    protected function cacheResponse( $data )
+    {
+        $url = request()->url();
+        $queryParams = request()->query();
+        ksort($queryParams);
+        $queryString = http_build_query($queryParams);
+        return Cache::remember( "$url/$queryString", 30, function() use($data){
+            return $data;
+        });
     }
 
 
