@@ -26,8 +26,9 @@ trait ApiResponser
 
     protected function showAll( Collection $collection, $code = 200 )
     {
-        if ( empty( $collection ) )
+        if ( empty( $collection ) ) {
             return $this->successResponse(['data' => $collection], $code);
+        }
 
         $trasformerObject = $collection->first()->transformer;
         $collection = $this->filterData( $collection, $trasformerObject );
@@ -52,7 +53,7 @@ trait ApiResponser
     {
 
         if ( request()->has('by') ) {
-            $by = $transformer::originalAttribute(request()->by);
+            $by = $transformer::getOriginalOrTransformedAttribute(request()->by);
             $order = request()->has('order') && (in_array(request()->order, ['asc', 'desc'])) ?
                 request()->order == 'desc':
                 'asc';
@@ -74,10 +75,11 @@ trait ApiResponser
     protected function filterData ( Collection $data, $transformer )
     {
         foreach( request()->query() as $filter => $value ){
-            $attribute = $transformer::originalAttribute( $filter );
+            $attribute = $transformer::getOriginalOrTransformedAttribute( $filter );
 
-            if ( isset( $attribute, $value) )
+            if ( isset( $attribute, $value) ) {
                 $data = $data->where($attribute, $value);
+            }
         }
 
         return $data;

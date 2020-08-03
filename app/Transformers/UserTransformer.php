@@ -44,7 +44,7 @@ class UserTransformer extends TransformerAbstract
 
         return [
             'identifier' => (int)$user->id,
-            'username' => (string)$user->username,
+            'name' => (string)$user->username,
             'email' => (string)$user->email,
             'verified' => $user->verified,
             'admin' => $user->admin,
@@ -57,19 +57,23 @@ class UserTransformer extends TransformerAbstract
     }
 
 
-    public static function originalAttribute ( $name )
+    public static function getOriginalOrTransformedAttribute ( $name, $get = 'original' )
     {
         $tmp = [
             'identifier' => 'id',
-            'username' => 'username',
+            'name' => 'username',
             'email' => 'email',
             'verified' => 'verified',
             'admin' => 'admin',
             'created_at' => 'created_at',
             'updated_at' => 'updated_at',
             'deleted_at' => 'deleted_at',
-            'categories' => 'categories'
+            'categories' => 'categories',
+            'password' => 'password'
         ];
+
+        if ( $get == 'transformed' )
+            $tmp = array_flip( $tmp );
 
         return ( $tmp[$name] ?? null );
     }

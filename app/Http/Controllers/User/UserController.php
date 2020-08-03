@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Category;
 use App\Http\Controllers\ApiController;
+use App\Transformers\UserTransformer;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,6 +20,13 @@ class UserController extends ApiController
     const EMAIL_ARG = 'email';
     const PASSWORD_ARG = 'password';
     const CATEGORIES_ARG = 'categories';
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->middleware('transform.input:' . UserTransformer::class)->only(['store', 'update']);
+    }
+
 
     /**
      * Display a listing of the resource.

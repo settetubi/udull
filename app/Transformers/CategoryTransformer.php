@@ -45,7 +45,7 @@ class CategoryTransformer extends TransformerAbstract
         ];
     }
 
-    public static function originalAttribute ( $name )
+    public static function getOriginalOrTransformedAttribute ( $name, $get = 'original' )
     {
         $tmp = [
             'identifier' => 'id',
@@ -55,6 +55,8 @@ class CategoryTransformer extends TransformerAbstract
             'updated_at' => 'updated_at',
             'deleted_at' => 'deleted_at',
         ];
+
+        $tmp = $get == 'transformed' ? array_flip($tmp) : $tmp;
 
         return ( $tmp[$name] ?? null );
     }
