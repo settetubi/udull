@@ -11,8 +11,9 @@ class TransformInput
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
+     * @param $transformer
      * @return mixed
      */
     public function handle($request, Closure $next, $transformer)
@@ -31,7 +32,6 @@ class TransformInput
 
             $data = $response->getData();
             $transformedErrors = [];
-
             foreach ( $data->error as $field => $error ){
                 $transformedField = $transformer::getOriginalOrTransformedAttribute($field, 'transformed');
                 $transformedErrors[$transformedField] = str_replace( $field, $transformedField, $error );

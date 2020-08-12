@@ -47,12 +47,12 @@ class UserTransformer extends TransformerAbstract
             'name' => (string)$user->username,
             'email' => (string)$user->email,
             'verified' => $user->verified,
+            'verification_token' => $user->verification_token,
             'admin' => $user->admin,
             'created_at' => $user->created_at,
             'updated_at' => $user->updated_at,
             'deleted_at' => ( $user->deleted_at ? (string)$user->deleted_at : null ),
             'categories' => $cats
-
         ];
     }
 
@@ -69,7 +69,8 @@ class UserTransformer extends TransformerAbstract
             'updated_at' => 'updated_at',
             'deleted_at' => 'deleted_at',
             'categories' => 'categories',
-            'password' => 'password'
+            'password' => 'password',
+            'password_confirmation' => 'password_confirmation'
         ];
 
         if ( $get == 'transformed' )

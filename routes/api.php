@@ -13,5 +13,12 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::resource('users', 'User\UserController', ['except' => ['create', 'edit']]);
-Route::resource('categories', 'Category\CategoryController', ['except' => ['create', 'edit']]);
+Route::resource('users', 'User\UserController', ['except' => ['create']]);
+Route::resource('categories', 'Category\CategoryController', ['except' => ['create']]);
+Route::name('verify')->get('users/verify/{token}', 'User\UserController@verify');
+Route::name('resend')->get('users/{user}/resend', 'User\UserController@resend');
+
+//Route::get('prova', function () {
+//    Log::info('A user has arrived at the welcome page.');
+//    return view('welcome');
+//});

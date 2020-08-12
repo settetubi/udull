@@ -4,7 +4,10 @@ namespace Tests\Unit;
 
 use App\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Mail\Transport\Transport;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Mail;
+use Swift_Events_EventListener;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,10 +17,24 @@ class UserTest extends TestCase
 {
     use DatabaseMigrations, RefreshDatabase;
 
+    protected $emails = [];
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+
+//        $swiftMailer = app('mailer')->getSwiftMailer();
+//        $swiftTransport = $swiftMailer->getTransport();
+//
+//        $swiftTransport->registerPlugin(new TestingMailEventListener($this));
+    }
+
+
     public function testGetUserList()
     {
         $response = $this->json('get', '/users?per_page=30' );
-        $response->assertSee("username");
+        $response->assertSee("name");
         $response->assertJsonCount(30, 'data');
 
     }
@@ -28,7 +45,7 @@ class UserTest extends TestCase
         $response = $this->json( 'get', '/users/10');
         $response->assertJsonCount( 1 );
         $response->assertJsonStructure([ 'data' => [
-            'identifier','username','email','verified','admin','created_at','updated_at','deleted_at','categories' => [[ 'identifier', 'name', 'description']]
+            'identifier','name','email','verified','admin','created_at','updated_at','deleted_at','categories' => [[ 'identifier', 'name', 'description']]
         ]]);
     }
 
@@ -36,7 +53,7 @@ class UserTest extends TestCase
     public function testCreateOneUser()
     {
         $response = $this->json( 'post', '/users', [
-            'username' => 'djeembo1',
+            'name' => 'djeembodjango',
             'email' => 'djeembo@gmail.com',
             'password' => 'password',
             'password_confirmation' => 'password'
@@ -44,20 +61,13 @@ class UserTest extends TestCase
 
         $response->assertStatus(201);
         $response->assertJsonStructure([ 'data' => [
-            'identifier','username','email','verified','admin','created_at','updated_at'
-        ]]);
-        $response->assertJson([ 'data' => [
-            'username' => 'djeembo1',
-            'identifier' => \DatabaseSeeder::USERS_QUANTITY_SEEDER+1,
-            'email' => 'djeembo@gmail.com',
-            'verified' => '0',
-            'admin' => "false"
+            'identifier','name','email','verified','admin','created_at','updated_at'
         ]]);
 
         $response = $this->json( 'get', '/users/'.(\DatabaseSeeder::USERS_QUANTITY_SEEDER+1));
         $response->assertStatus(200);
         $response->assertJson([ 'data' => [
-            'username' => 'djeembo1',
+            'name' => 'djeembo1',
             'identifier' => \DatabaseSeeder::USERS_QUANTITY_SEEDER+1,
             'email' => 'djeembo@gmail.com',
             'verified' => '0',
@@ -74,7 +84,7 @@ class UserTest extends TestCase
         $until = count( $cat );
 
         $response = $this->json( 'post', '/users', [
-            'username' => 'djeembox',
+            'name' => 'djeembox',
             'email' => 'djeembox@gmail.com',
             'password' => 'password',
             'password_confirmation' => 'password',
@@ -87,7 +97,7 @@ class UserTest extends TestCase
 
         $response->assertJsonCount( 1 );
         $response->assertJsonStructure([ 'data' => [
-            'identifier','username','email','verified','admin','created_at','updated_at','deleted_at','categories' => [[ 'identifier', 'name', 'description']]
+            'identifier','name','email','verified','admin','created_at','updated_at','deleted_at','categories' => [[ 'identifier', 'name', 'description']]
         ]]);
 
         $response->assertJsonCount($until, 'data.categories');
@@ -108,7 +118,7 @@ class UserTest extends TestCase
 
         $pass = 'nuovaPassword';
         $newResponse = $this->json( 'patch', "/users/$id", [
-            'username' => 'nuovoDjeembo',
+            'name' => 'nuovoDjeembo',
             'email' => 'nuovoDjeembo@ramarro.com',
             'password' => $pass,
             'password_confirmation' => $pass,
@@ -120,11 +130,12 @@ class UserTest extends TestCase
         $newResponse = $this->json( 'get', "/users/$id" );
 
         $newResponse->assertJson(['data' => [
-            'username' => 'nuovoDjeembo',
+            'name' => 'nuovoDjeembo',
             'email' => 'nuovoDjeembo@ramarro.com',
 
         ]]);
         $user = User::findOrFail($id);
+
 
         $this->assertTrue(password_verify($pass, $user->password));
 
@@ -145,7 +156,7 @@ class UserTest extends TestCase
 
 
         $response = $this->json( 'post', '/users', [
-            'username' => 'djeembodelete1',
+            'name' => 'djeembodelete1',
             'email' => 'djeembo@gmail.com',
             'password' => 'password',
             'password_confirmation' => 'password'
@@ -153,18 +164,15 @@ class UserTest extends TestCase
 
         $response->assertStatus(201);
         $response->assertJsonStructure([ 'data' => [
-            'identifier','username','email','verified','admin','created_at','updated_at'
+            'identifier','name','email','verified','admin','created_at','updated_at'
         ]]);
         $data = $response->decodeResponseJson();
-
-
         $newResponse = $this->json( 'patch', "/users/{$data['data']['identifier']}", [
-            'username' => 'djeembodelete1',
+            'name' => 'djeembodelete1',
             'email' => 'djeembo@gmail.com',
             'password' => 'password',
             'password_confirmation' => 'password'
         ]);
-
         $newResponse->assertStatus(422);
 
     }
@@ -172,7 +180,7 @@ class UserTest extends TestCase
 
     public function testDeleteUser() {
         $response = $this->json( 'post', '/users', [
-            'username' => 'djeembodelete1',
+            'name' => 'djeembodelete1',
             'email' => 'djeembo@gmail.com',
             'password' => 'password',
             'password_confirmation' => 'password'
@@ -180,11 +188,11 @@ class UserTest extends TestCase
 
         $response->assertStatus(201);
         $response->assertJsonStructure([ 'data' => [
-            'identifier','username','email','verified','admin','created_at','updated_at'
+            'identifier','name','email','verified','admin','created_at','updated_at'
         ]]);
 
         $response->assertJson([ 'data' => [
-            'username' => 'djeembodelete1',
+            'name' => 'djeembodelete1',
             'identifier' => (\DatabaseSeeder::USERS_QUANTITY_SEEDER+1),
             'email' => 'djeembo@gmail.com',
             'verified' => '0',
@@ -243,4 +251,79 @@ class UserTest extends TestCase
             'error', 'code',
         ]);
     }
+
+
+
+    /////////////////////////////////
+    /// mail testing management
+    ///
+    /// testMail test to try
+//    public function testMail() {
+//
+////        $response = $this->json( 'get', '/prova');
+//
+//
+//        Mail::raw('ciaone', function($message) {
+//            $message->to('gnappo@gnappo.com');
+//            $message->from('laltrognappo@gnappo.com');
+//        });
+//
+//        $this->seeEmailWasSent();
+//
+//        $response = $this->json( 'post', '/users', [
+//            'name' => 'djeembo1',
+//            'email' => 'djeembo@gmail.com',
+//            'password' => 'password',
+//            'password_confirmation' => 'password'
+//        ]);
+//
+//        $response->assertStatus(201);
+//        $response->assertJsonStructure([ 'data' => [
+//            'identifier','name','email','verified','admin','created_at','updated_at'
+//        ]]);
+
+//        $this->assertNotEmpty($this->emails, 'No emails have been sent');
+//        $mail = $this->popEmail();
+//        dd( $mail );
+//        $this->assertEquals('djeembo@gmail.com', $mail->getTo());
+
+
+//    }
+
+//    protected function seeEmailWasSent(){
+//        $this->assertNotEmpty($this->emails, 'No emails have been sent');
+//    }
+//
+//    public function addEmail(\Swift_Message $emails){
+//        $this->emails[] = $emails;
+//    }
+//
+//    public function popEmail(){
+//        return array_pop($this->emails);
+//    }
+//
+//    public function emptyEmails() {
+//        $this->emails = [];
+//    }
+
+
 }
+
+
+
+
+
+//class TestingMailEventListener implements Swift_Events_EventListener
+//{
+//
+//    protected $test;
+//
+//    public function __construct($test){
+//        $this->test = $test;
+//    }
+//
+//
+//    public function beforeSendPerformed($event){
+//        $this->test->addEmail($event->getMessage());
+//    }
+//}

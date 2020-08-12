@@ -29,6 +29,10 @@ class DatabaseSeeder extends Seeder
         Category::truncate();
         DB::table('category_user')->truncate();
 
+        // per evitare linvio di mail quando viene rieseguito seeder
+        User::flushEventListeners();
+        Category::flushEventListeners();
+
         factory(Category::class, self::CATEGORIES_QUANTITY_SEEDER)->create();
         factory(User::class, self::USERS_QUANTITY_SEEDER)->create()->each(
             function ( $user ) {

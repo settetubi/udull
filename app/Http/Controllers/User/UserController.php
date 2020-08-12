@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Category;
 use App\Http\Controllers\ApiController;
+use App\Mail\UserCreated;
 use App\Transformers\UserTransformer;
 use App\User;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 
 class UserController extends ApiController
@@ -47,7 +49,6 @@ class UserController extends ApiController
      */
     public function store(Request $request)
     {
-
        $this->validate($request, [
            self::USERNAME_ARG => 'required|alpha_dash|unique:users|max:30',
            self::EMAIL_ARG => 'required|email:dns|unique:users',
@@ -108,8 +109,9 @@ class UserController extends ApiController
             $user->username = $request->username;
         }
 
-        // generate verification code...
         if ( $request->has('email') ) {
+            $user->verified = User::UNVERIFIED_USER;
+            $user->verification_token = User::generateVerificationCode();
             $user->email = $request->email;
         }
 
@@ -143,5 +145,31 @@ class UserController extends ApiController
         $user->delete();
         return $this->showOne($user);
 
+    }
+
+    public function verify( $token )
+    {
+
+        $user = User::where('verification_token', $token)->firstOrFail();
+        $user->verified = User::VERIFIED_USER;
+        $user->verification_token = null;
+
+        $user->save();
+        return $this->successResponse([
+            'data' => 'The account has been verified successfully'
+        ], 200);
+    }
+
+    public function resend( User $user )
+    {
+        if ( $user->isVerified() ){
+            return $this->errorResponse('User already verified', 409);
+        }
+
+        retry(5, function() use($user) {
+            Mail::to($user)->send(new UserCreated($user));
+        }, 100 );
+
+        return $this->successResponse([ 'data' => 'Email sent' ], 200);
     }
 }
